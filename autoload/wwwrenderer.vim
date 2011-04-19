@@ -96,11 +96,13 @@ function! wwwrenderer#render(url, ...)
     if h =~ "^Content-Type"
       let tmp = matchlist(h, mx)
       if len(tmp)
-        let enc = tmp[1]
+        let enc = tolower(tmp[1])
       endif
     endif
   endfor
-  let res.content = iconv(res.content, enc, &encoding)
+  if res.content != '^\s*<?xml'
+    let res.content = iconv(res.content, enc, &encoding)
+  endif
   let dom = html#parse(res.content)
   if len(scrape) == 0
     let ret = dom
