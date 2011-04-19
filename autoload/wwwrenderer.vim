@@ -17,37 +17,40 @@
 "
 " INTRODUCTION                                                  *wwwrenderer-intro*
 "
-" This is vimscript like world wide web browser.
+"   This is vimscript like world wide web browser.
 "
 " INSTALL                                                     *wwwrenderer-install*
 "
-" copy wwwrenderer.vim to rtp/autoload directory.
+"   copy wwwrenderer.vim to rtp/autoload directory.
+"   this script require curl command and webapi-vim.
+"
+"   see: http://github.com/mattn/webapi-vim
 "
 " USAGE                                                        *wwwrenderer-writer*
 "
-" This is utility function. Then, you should call as below.
+"   This is utility function. Then, you should call as below.
 "
 " >
-"   echo WebRender('http://eow.alc.co.jp/fusion/UTF-8/',
+"   echo wwwrenderer#render('http://eow.alc.co.jp/fusion/UTF-8/',
 "       ['div', {'class': 'sas'}], ['div', {'id': 'resultsList'}])
 " <
 "
-" First parameter is URL to get.
-" Second and following parameters is scraping option.
+"   First parameter is URL to get.
+"   Second and following parameters is scraping option.
 "
 " >
 "   ['div', {'class': 'sas'}]
 " <
-
-" A first of array is tag name. and second one is directory object that
-" specify attributes. Above line is meaning div[@class=sas] in saying XPath.
+"
+"   A first of array is tag name. and second one is directory object that
+"   specify attributes. Above line is meaning div[@class=sas] in saying XPath.
 "
 " ==============================================================================
 " TODO                                                           *wwwrenderer-todo*
 " * form/input/text ?
 " ==============================================================================
 " vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:
-" ExportDoc: exportdoc.txt:5:-1
+" ExportDoc: wwwrenderer.txt:5:-1
 
 function! s:render(dom, pre)
   let dom = a:dom
