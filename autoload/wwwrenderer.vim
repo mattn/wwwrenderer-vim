@@ -100,7 +100,7 @@ function! wwwrenderer#render(url, ...)
       endif
     endif
   endfor
-  if res.content != '^\s*<?xml'
+  if res.content !~ '^\s*<?xml'
     let res.content = iconv(res.content, enc, &encoding)
   endif
   let dom = html#parse(res.content)
