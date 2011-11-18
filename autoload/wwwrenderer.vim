@@ -52,7 +52,7 @@
 " vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:
 " ExportDoc: wwwrenderer.txt:5:-1
 "
-function! s:renderer(dom, pre, extra)
+function! s:render(dom, pre, extra)
   let dom = a:dom
   if type(dom) == 0 || type(dom) == 1 || type(dom) == 5
     let html = html#decodeEntityReference(dom)
