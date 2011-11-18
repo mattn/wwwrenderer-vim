@@ -1,5 +1,5 @@
 "File: wwwrenderer.vim
-"Last Change: 18-Nov-2011.
+"Last Change: 19-Nov-2011.
 "Version: 0.01
 "
 " *wwwrenderer.vim* www renderer for vim
@@ -94,7 +94,7 @@ function! s:renderer(dom, pre, extra)
 endfunction
 
 function! wwwrenderer#render_dom(dom)
-  return s:render(dom, 0, 0)
+  return s:render(a:dom, 0, 0)
 endfunction
 
 function! wwwrenderer#render(url, ...)
