@@ -1,5 +1,5 @@
 "File: wwwrenderer.vim
-"Last Change: 19-Apr-2011.
+"Last Change: 18-Nov-2011.
 "Version: 0.01
 "
 " *wwwrenderer.vim* www renderer for vim
@@ -51,8 +51,8 @@
 " ==============================================================================
 " vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:
 " ExportDoc: wwwrenderer.txt:5:-1
-
-function! s:render(dom, pre)
+"
+function! s:renderer(dom, pre, extra)
   let dom = a:dom
   if type(dom) == 0 || type(dom) == 1 || type(dom) == 5
     let html = html#decodeEntityReference(dom)
@@ -65,7 +65,7 @@ function! s:render(dom, pre)
   elseif type(dom) == 3
     let html = ""
     for d in dom
-      let html .= s:render(d, a:pre)
+      let html .= s:render(d, a:pre, a:extra)
       unlet d
     endfor
     return html
@@ -74,17 +74,27 @@ function! s:render(dom, pre)
       return ""
     endif
     if dom.name != "script" && dom.name != "style" && dom.name != "head"
-      let html = s:render(dom.child, a:pre || dom.name == "pre")
+      let html = s:render(dom.child, a:pre || dom.name == "pre", a:extra)
       if dom.name =~ "^h[1-6]$" || dom.name == "br" || dom.name == "dt" || dom.name == "dl" || dom.name == "li" || dom.name == "p"
         let html = "\n".html."\n"
       endif
       if dom.name == "pre" || dom.name == "blockquote"
         let html = "\n  ".substitute(html, '\n', '\n  ', 'g')."\n"
       endif
+      if type(a:extra) == 3 && dom.name == "a"
+        let lines = split(html, "\n", 1)
+        let y = len(lines)
+        let x = len(lines[-1])
+        call add(a:extra, {"x": x, "y": y, "node": dom})
+      endif
       return html
     endif
     return ""
   endif
+endfunction
+
+function! wwwrenderer#render_dom(dom)
+  return s:render(dom, 0, 0)
 endfunction
 
 function! wwwrenderer#render(url, ...)
@@ -113,5 +123,36 @@ function! wwwrenderer#render(url, ...)
       call add(ret, "\n")
     endfor
   endif
-  return s:render(ret, 0)
+  return s:render(dom, 0, 0)
+endfunction
+
+function! wwwrenderer#content(url, ...)
+  let scrape = a:000
+  let res = http#get(a:url)
+  let enc = "utf-8"
+  let mx = '.*charset="\?\([^;]\+\)'
+  for h in res.header
+    if h =~ "^Content-Type"
+      let tmp = matchlist(h, mx)
+      if len(tmp)
+        let enc = tolower(tmp[1])
+      endif
+    endif
+  endfor
+  if res.content !~ '^\s*<?xml'
+    let res.content = iconv(res.content, enc, &encoding)
+  endif
+  let dom = html#parse(res.content)
+  if len(scrape) == 0
+    let ret = dom
+  else
+    let ret = []
+    for s in scrape
+      call add(ret, dom.find(s[0], s[1]))
+      call add(ret, "\n")
+    endfor
+  endif
+  let extra = []
+  let content = s:render(dom, 0, extra)
+  return [content, extra]
 endfunction
