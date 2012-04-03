@@ -1,5 +1,5 @@
 "File: wwwrenderer.vim
-"Last Change: 19-Nov-2011.
+"Last Change: 03-Apr-2012.
 "Version: 0.01
 "
 " *wwwrenderer.vim* www renderer for vim
@@ -55,7 +55,7 @@
 function! s:render(dom, pre, extra)
   let dom = a:dom
   if type(dom) == 0 || type(dom) == 1 || type(dom) == 5
-    let html = html#decodeEntityReference(dom)
+    let html = webapi#html#decodeEntityReference(dom)
     let html = substitute(html, '\r', '', 'g')
     if a:pre == 0
       let html = substitute(html, '\n\+\s*', '', 'g')
@@ -99,7 +99,7 @@ endfunction
 
 function! wwwrenderer#render(url, ...)
   let scrape = a:000
-  let res = http#get(a:url)
+  let res = webapi#http#get(a:url)
   let enc = "utf-8"
   let mx = '.*charset="\?\([^;]\+\)'
   for h in res.header
@@ -113,7 +113,7 @@ function! wwwrenderer#render(url, ...)
   if res.content !~ '^\s*<?xml'
     let res.content = iconv(res.content, enc, &encoding)
   endif
-  let dom = html#parse(res.content)
+  let dom = webapi#html#parse(res.content)
   if len(scrape) == 0
     let ret = dom
   else
@@ -128,7 +128,7 @@ endfunction
 
 function! wwwrenderer#content(url, ...)
   let scrape = a:000
-  let res = http#get(a:url)
+  let res = webapi#http#get(a:url)
   let enc = "utf-8"
   let mx = '.*charset="\?\([^;]\+\)'
   for h in res.header
@@ -142,7 +142,7 @@ function! wwwrenderer#content(url, ...)
   if res.content !~ '^\s*<?xml'
     let res.content = iconv(res.content, enc, &encoding)
   endif
-  let dom = html#parse(res.content)
+  let dom = webapi#html#parse(res.content)
   if len(scrape) == 0
     let ret = dom
   else
