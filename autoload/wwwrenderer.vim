@@ -113,7 +113,6 @@ function! wwwrenderer#render(url, ...)
   if res.content !~ '^\s*<?xml'
     let res.content = iconv(res.content, enc, &encoding)
   endif
-  let g:hoge = res.content
   let dom = webapi#html#parse(res.content)
   if len(scrape) == 0
     let ret = dom
