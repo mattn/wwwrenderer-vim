@@ -1,5 +1,5 @@
 "File: wwwrenderer.vim
-"Last Change: 03-Apr-2012.
+"Last Change: 27-Jul-2012.
 "Version: 0.01
 "
 " *wwwrenderer.vim* www renderer for vim
@@ -75,7 +75,7 @@ function! s:render(dom, pre, extra)
     endif
     if dom.name != "script" && dom.name != "style" && dom.name != "head"
       let html = s:render(dom.child, a:pre || dom.name == "pre", a:extra)
-      if dom.name =~ "^h[1-6]$" || dom.name == "br" || dom.name == "dt" || dom.name == "dl" || dom.name == "li" || dom.name == "p"
+      if dom.name =~ "^h[1-6]$" || dom.name == "br" || dom.name == "dt" || dom.name == "dl" || dom.name == "li" || dom.name == "p" || dom.name == "div"
         let html = "\n".html."\n"
       endif
       if dom.name == "pre" || dom.name == "blockquote"
@@ -113,6 +113,7 @@ function! wwwrenderer#render(url, ...)
   if res.content !~ '^\s*<?xml'
     let res.content = iconv(res.content, enc, &encoding)
   endif
+  let g:hoge = res.content
   let dom = webapi#html#parse(res.content)
   if len(scrape) == 0
     let ret = dom
@@ -155,4 +156,31 @@ function! wwwrenderer#content(url, ...)
   let extra = []
   let content = s:render(dom, 0, extra)
   return [content, extra]
+endfunction
+
+function! wwwrenderer#wrap(content)
+  let lines = split(a:content, "\n")
+  let idx = 0
+  while idx < len(lines)
+    let w = strdisplaywidth(lines[idx])
+    if w >= &columns
+      let indent = matchstr(lines[idx], '^\s*')
+      let [line, ins] = ['', '']
+      for c in split(lines[idx], '\zs')
+        if strdisplaywidth(line . c) >= &columns
+          let ins .= line . "\n"
+          let line = indent
+        endif
+        let line .= c
+      endfor
+      let ins .= line . "\n"
+      if idx == 0
+        let lines = split(ins, "\n") + lines[idx+1:]
+      else
+        let lines = lines[0: idx-1] + split(ins, "\n") + lines[idx+1:]
+      endif
+    endif
+    let idx += 1
+  endwhile
+  return join(lines, "\n")
 endfunction
