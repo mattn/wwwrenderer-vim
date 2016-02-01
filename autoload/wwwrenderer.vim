@@ -153,7 +153,7 @@ function! wwwrenderer#content(url, ...)
     endfor
   endif
   let extra = []
-  let content = s:render(dom, 0, extra)
+  let content = s:render(ret, 0, extra)
   return [content, extra]
 endfunction
 
